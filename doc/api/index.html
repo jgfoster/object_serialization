@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="generator" content="made with love by dartdoc 8.0.3">
+  <meta name="description" content="object_serialization API docs, for the Dart programming language.">
+  <title>object_serialization - Dart API docs</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="static-assets/github.css?v1">
+  <link rel="stylesheet" href="static-assets/styles.css?v1">
+  <link rel="icon" href="static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="" data-using-base-href="false" class="light-theme">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li class="self-crumb">object_serialization package</li>
+  </ol>
+  <div class="self-name">object_serialization</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        brightness_4
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        brightness_5
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+
+  <div id="dartdoc-main-content" class="main-content">
+      
+<section class="desc markdown">
+  <p><a href="https://pub.dev/packages/object_serialization"><img src="https://img.shields.io/pub/v/object_serialization.svg" alt="Pub Package"></a></p>
+<p>A serialization library that supports circular references and
+preserves identity when objects are referenced via multiple paths.</p>
+<h2 id="features">Features</h2>
+<p>Many serialization libraries do not handle circular references; this one does!
+Most serialization libraries do not perserve identity; this one does!
+That is, when <code>a</code> references both <code>b</code> and <code>c</code>, each of which reference <code>d</code>,
+this library installs the same <code>d</code> into both <code>b</code> and <code>c</code>.</p>
+<pre class="language-dart"><code>  a
+ / \
+b   c
+ \ /
+  d
+</code></pre>
+<p>Consider the following code in which a list contains two references to
+the same object (in this case, a String):</p>
+<pre class="language-dart"><code class="language-dart">final s = 'abc';
+final list1 = [s, s];
+assert(identical(list1.first, list1.last));
+</code></pre>
+<p>If we use <code>jsonEncode()</code> and <code>jsonDecode()</code>, the referenced object is
+duplicated (object identity is lost):</p>
+<pre class="language-dart"><code class="language-dart">final buffer = jsonEncode(list1);
+final list2 = jsonDecode(buffer) as List;
+assert(identical(list2.first, list2.last));  // FAILS!
+</code></pre>
+<p>But with <code>object_serializatiion</code> the referenced object is the same
+(object identity is preserved):</p>
+<pre class="language-dart"><code class="language-dart">final buffer = ObjectSerialization.encode(list1);
+final list2 = ObjectSerialization.decode(buffer, {}) as List;
+assert(identical(list2.first, list2.last));  // PASSES!
+</code></pre>
+<h2 id="usage">Usage</h2>
+<p>While a few simple objects are handled automatically, more complex classes
+should implement or extend <code>Serializable</code>. This requires up to four new
+methods:</p>
+<ul>
+<li><code>List&lt;Object&gt; get finalProperties</code> and <code>List&lt;Object&gt; get transientProperties</code>
+are used to obtain a list of properties that can be used to recreate the object.
+<ul>
+<li><code>finalProperties</code> are those that must be provided <em>when the object is created</em>.</li>
+<li><code>transientProperties</code> are all other properties.</li>
+</ul>
+</li>
+<li>A factory function is used to recreate the object.</li>
+<li><code>set transientProperties(List&lt;Object&gt; properties)</code> is used to set other properties.</li>
+</ul>
+<p>The reason we can't provide all the properties during creation is that there
+may be circular references between objects. That is, <code>a</code> can reference <code>b</code> and
+<code>b</code> can reference <code>a</code>. Yet, while there can be circular references, they cannot
+both be <code>final</code> since one must exist to be used by the other.</p>
+<p>See the test files for further examples.</p>
+<h2 id="additional-information">Additional information</h2>
+<p>See <a href="https://github.com/jgfoster/object_serialization">https://github.com/jgfoster/object_serialization</a> to contribute code or file issues.</p>
+</section>
+
+
+      <section class="summary">
+          <h2>Libraries</h2>
+        <dl>
+          <dt id="object_serialization">
+  <span class="name"><a href="object_serialization/object_serialization-library.html">object_serialization</a></span> 
+
+</dt>
+<dd>A serialization library that supports circular references and
+preserves identity when objects are referenced via multiple paths.
+</dd>
+
+        </dl>
+      </section>
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li class="self-crumb">object_serialization package</li>
+</ol>
+
+
+    <h5 class="hidden-xs"><span class="package-name">object_serialization</span> <span class="package-kind">package</span></h5>
+    <ol>
+      <li class="section-title">Libraries</li>
+      <li><a href="object_serialization/object_serialization-library.html">object_serialization</a></li>
+</ol>
+
+  </div>
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div>
+
+</main>
+
+<footer>
+  <span class="no-break">
+    object_serialization
+      1.0.0
+  </span>
+
+  
+</footer>
+
+
+
+<script src="static-assets/highlight.pack.js?v1"></script>
+<script src="static-assets/docs.dart.js"></script>
+
+
+
+</body>
+
+</html>
+
