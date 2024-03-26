@@ -1,10 +1,12 @@
 [![Pub Package](https://img.shields.io/pub/v/object_serialization.svg)](https://pub.dev/packages/object_serialization)
 
 
-A serialization library that preserves identity when objects are referenced via multiple paths. 
+A serialization library that supports circular references and 
+preserves identity when objects are referenced via multiple paths. 
 
 ## Features
 
+Many serialization libraries do not handle circular references; this one does!
 Most serialization libraries do not perserve identity; this one does! 
 That is, when `a` references both `b` and `c`, each of which reference `d`, 
 this library installs the same `d` into both `b` and `c`. 
@@ -49,8 +51,7 @@ methods:
 are used to obtain a list of properties that can be used to recreate the object.
   * `finalProperties` are those that must be provided _when the object is created_.
   * `transientProperties` are all other properties.
-* `factory Serializable.withFinalProperties(List<dynamic> finalProperties)`
-is used to recreate the object.
+* A factory function is used to recreate the object.
 * `set transientProperties(List<Object> properties)` is used to set other properties.
 
 The reason we can't provide all the properties during creation is that there
@@ -58,7 +59,7 @@ may be circular references between objects. That is, `a` can reference `b` and
 `b` can reference `a`. Yet, while there can be circular references, they cannot
 both be `final` since one must exist to be used by the other.
 
-See the test files for examples.
+See the test files for further examples.
 
 ## Additional information
 

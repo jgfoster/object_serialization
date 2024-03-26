@@ -1,5 +1,5 @@
 name: object_serialization
-description: An object serialization library for Dart and Flutter that preserves identity.
+description: An object serialization library for Dart and Flutter that supports circular references and preserves identity.
 version: 1.0.0
 repository: https://github.com/jgfoster/object_serialization
 

@@ -107,4 +107,36 @@ void main() {
     final list2 = ObjectSerialization.decode(buffer, {}) as List;
     expect(identical(list2.first, list2.last), isTrue);
   });
+
+  test('circular references', () async {
+    final m1 = {};
+    m1['self'] = m1;
+    expect(identical(m1['self'], m1), isTrue);
+    final buffer = ObjectSerialization.encode(m1);
+    expect(
+      buffer,
+      equals('[[0,"_Map<dynamic, dynamic>",[],[1,0]],[1,"String","self"]]'),
+    );
+    final m2 = ObjectSerialization.decode(buffer, {}) as Map;
+    expect(identical(m2['self'], m2), isTrue);
+  });
+
+  test('JSON data types', () async {
+    final l1 = [
+      0,
+      'one',
+      true,
+      [],
+      {1: 1},
+      null,
+    ];
+    final buffer = ObjectSerialization.encode(l1);
+    final l2 = ObjectSerialization.decode(buffer, {}) as List;
+    expect(l2[0], equals(0));
+    expect(l2[1], equals('one'));
+    expect(l2[2], equals(true));
+    expect(l2[3], equals([]));
+    expect(l2[4], equals({1: 1}));
+    expect(l2[5], isNull);
+  });
 }

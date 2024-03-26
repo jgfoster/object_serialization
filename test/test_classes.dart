@@ -11,7 +11,7 @@ class A extends Serializable {
   final C c;
 
   @override
-  List<Object> get finalProperties => [b, c];
+  List<dynamic> get finalProperties => [b, c];
 }
 
 // The reference to `d` is `final`.
@@ -23,7 +23,7 @@ class B extends Serializable {
   final D d;
 
   @override
-  List<Object> get finalProperties => [d];
+  List<dynamic> get finalProperties => [d];
 }
 
 // The reference to `d` is not `final`.
@@ -35,10 +35,10 @@ class C extends Serializable {
   D d;
 
   @override
-  List<Object> get transientProperties => [d];
+  List<dynamic> get transientProperties => [d];
 
   @override
-  set transientProperties(List<Object> properties) {
+  set transientProperties(List<dynamic> properties) {
     d = properties[0] as D;
   }
 }
@@ -53,5 +53,5 @@ class D extends Serializable {
   final String y;
 
   @override
-  List<Object> get finalProperties => [x, y];
+  List<dynamic> get finalProperties => [x, y];
 }
