@@ -139,4 +139,39 @@ void main() {
     expect(l2[4], equals({1: 1}));
     expect(l2[5], isNull);
   });
+
+  test('DateTime', () async {
+    final d1 = DateTime.now();
+    final buffer = ObjectSerialization.encode(d1);
+    final d2 = ObjectSerialization.decode(buffer, {}) as DateTime;
+    expect(d2, equals(d1));
+  });
+
+  test('Duration', () async {
+    final d1 = Duration(days: 1, hours: 2, minutes: 3, seconds: 4);
+    final buffer = ObjectSerialization.encode(d1);
+    final d2 = ObjectSerialization.decode(buffer, {}) as Duration;
+    expect(d2, equals(d1));
+  });
+
+  test('BigInt', () async {
+    final i1 = BigInt.parse('9223372036854775808');
+    final buffer = ObjectSerialization.encode(i1);
+    final i2 = ObjectSerialization.decode(buffer, {}) as BigInt;
+    expect(i2, equals(i1));
+  });
+
+  test('Uri', () async {
+    final u1 = Uri.parse('https://example.com');
+    final buffer = ObjectSerialization.encode(u1);
+    final u2 = ObjectSerialization.decode(buffer, {}) as Uri;
+    expect(u2, equals(u1));
+  });
+
+  test('RegExp', () async {
+    final r1 = RegExp(r'\d+');
+    final buffer = ObjectSerialization.encode(r1);
+    final r2 = ObjectSerialization.decode(buffer, {}) as RegExp;
+    expect(r2, equals(r1));
+  });
 }

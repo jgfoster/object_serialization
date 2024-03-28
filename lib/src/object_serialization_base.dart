@@ -85,7 +85,13 @@ class _Object {
     if (object is Serializable ||
         object is List ||
         object is Set ||
-        object is Map) {
+        object is Map ||
+        object is DateTime ||
+        object is Duration ||
+        object is BigInt ||
+        object is Uri ||
+        object is RegExp ||
+        false) {
       result.add(finalProperties);
       result.add(transientProperties);
     } else {
@@ -135,6 +141,40 @@ class _Reader {
       } else if (typeName.startsWith('_Map<')) {
         _objectsById[id] = {};
         _transientPropertiesById[id] = encodedObject[3];
+      } else if (typeName == 'DateTime') {
+        final usId = encodedObject[2][0] as int;
+        final us = _objectsById[usId] as int;
+        _objectsById[id] = DateTime.fromMicrosecondsSinceEpoch(us);
+      } else if (typeName == 'Duration') {
+        final usId = encodedObject[2][0] as int;
+        final us = _objectsById[usId] as int;
+        _objectsById[id] = Duration(microseconds: us);
+      } else if (typeName == '_BigIntImpl') {
+        final bigIntId = encodedObject[2][0] as int;
+        final string = _objectsById[bigIntId] as String;
+        _objectsById[id] = BigInt.parse(string);
+      } else if (typeName == '_RegExp') {
+        final patternId = encodedObject[2][0] as int;
+        final pattern = _objectsById[patternId] as String;
+        final isCaseSensitiveId = encodedObject[2][1] as int;
+        final isCaseSensitive = _objectsById[isCaseSensitiveId] as bool;
+        final isMultiLineId = encodedObject[2][2] as int;
+        final isMultiLine = _objectsById[isMultiLineId] as bool;
+        final isUnicodeId = encodedObject[2][3] as int;
+        final isUnicode = _objectsById[isUnicodeId] as bool;
+        final isDotAllId = encodedObject[2][4] as int;
+        final isDotAll = _objectsById[isDotAllId] as bool;
+        _objectsById[id] = RegExp(
+          pattern,
+          caseSensitive: isCaseSensitive,
+          multiLine: isMultiLine,
+          unicode: isUnicode,
+          dotAll: isDotAll,
+        );
+      } else if (typeName == '_SimpleUri') {
+        final uriId = encodedObject[2][0] as int;
+        final string = _objectsById[uriId] as String;
+        _objectsById[id] = Uri.parse(string);
       } else {
         _objectsById[id] = encodedObject[2];
       }
@@ -193,6 +233,20 @@ class _Writer {
         transientProperties.add(key);
         transientProperties.add(next[key]);
       }
+    } else if (next is DateTime) {
+      finalProperties.add(next.microsecondsSinceEpoch);
+    } else if (next is Duration) {
+      finalProperties.add(next.inMicroseconds);
+    } else if (next is BigInt) {
+      finalProperties.add(next.toString());
+    } else if (next is RegExp) {
+      finalProperties.add(next.pattern);
+      finalProperties.add(next.isCaseSensitive);
+      finalProperties.add(next.isMultiLine);
+      finalProperties.add(next.isUnicode);
+      finalProperties.add(next.isDotAll);
+    } else if (next is Uri) {
+      finalProperties.add(next.toString());
     } else if (!(next is num ||
         next is String ||
         next is bool ||
