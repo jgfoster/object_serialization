@@ -182,12 +182,24 @@ class _Reader {
   }
 
   void _updateTransientProperties() {
+    /* Split objects into two groups, those that are Serializable
+     * and those that are not. The idea is that we handle the 
+     * non-Serializable objects first so that if we pass a list to
+     * a Serializable object, the list will be populated already.
+     */
+    final serializableObjectIds = <int>[];
+    final otherObjectIds = <int>[];
     for (final id in _transientPropertiesById.keys) {
       final object = _objectsById[id];
       if (object is Serializable) {
-        object.transientProperties =
-            _transientPropertiesById[id]!.map((e) => _objectsById[e]!).toList();
-      } else if (object is List) {
+        serializableObjectIds.add(id);
+      } else {
+        otherObjectIds.add(id);
+      }
+    }
+    for (final id in otherObjectIds) {
+      final object = _objectsById[id];
+      if (object is List) {
         object
             .addAll(_transientPropertiesById[id]!.map((e) => _objectsById[e]));
       } else if (object is Set) {
@@ -200,6 +212,11 @@ class _Reader {
           object[key] = value;
         }
       }
+    }
+    for (final id in serializableObjectIds) {
+      final object = _objectsById[id];
+      object.transientProperties =
+          _transientPropertiesById[id]!.map((e) => _objectsById[e]!).toList();
     }
   }
 }

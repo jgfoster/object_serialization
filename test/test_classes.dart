@@ -35,11 +35,14 @@ class C extends Serializable {
   D d;
 
   @override
-  List<dynamic> get transientProperties => [d];
+  // ensure that lists are processede before Serializable objects
+  List<dynamic> get transientProperties => [
+        [d],
+      ];
 
   @override
   set transientProperties(List<dynamic> properties) {
-    d = properties[0] as D;
+    d = properties[0][0] as D;
   }
 }
 

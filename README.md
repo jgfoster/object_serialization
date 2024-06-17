@@ -61,6 +61,10 @@ both be `final` since one must exist to be used by the other.
 
 See the test files for further examples.
 
+## Format
+
+The encoded data is a JSON list of objects. Each object is a list of three or four values. The first value is the internal object identifier (used to reference this object from elsewhere). The second value is the runtime type for the object (used to recreate the object). If the object is a simple `int` or `string` then the third value is a JSON representation of the object's value. Otherwise, the third value is a list of _final_ properties and the fourth value is a list of _transient_ properties. The final properties are used when recreating the object and the transient properties are updated after the objects are all recreated.
+
 ## Additional information
 
 See https://github.com/jgfoster/object_serialization to contribute code or file issues.

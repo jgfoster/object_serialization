@@ -30,6 +30,35 @@ void main() {
     expect(object, equals([1, 'one']));
   });
 
+  test('nested lists', () async {
+    final obj1 = [
+      1,
+      [
+        2,
+        [
+          3,
+          [4],
+        ],
+      ]
+    ];
+    final buffer = ObjectSerialization.encode(obj1);
+    expect(
+      buffer,
+      equals('['
+          '[0,"List<Object>",[],[1,2]],'
+          '[1,"int",1],'
+          '[2,"List<Object>",[],[3,4]],'
+          '[3,"int",2],'
+          '[4,"List<Object>",[],[5,6]],'
+          '[5,"int",3],'
+          '[6,"List<int>",[],[7]],'
+          '[7,"int",4]'
+          ']'),
+    );
+    final obj2 = ObjectSerialization.decode(buffer, {}) as List;
+    expect(obj2, equals(obj1));
+  });
+
   test('List<D>', () async {
     final d1 = D(1, 'one');
     final buffer = ObjectSerialization.encode([d1, d1]);
