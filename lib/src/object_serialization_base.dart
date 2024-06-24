@@ -119,7 +119,7 @@ class _Reader {
   final Map<int, List<dynamic>> _transientPropertiesById = {};
 
   dynamic get object {
-    return _objectsById[0]!;
+    return _objectsById[0];
   }
 
   void _readObjects() {
@@ -216,7 +216,7 @@ class _Reader {
     for (final id in serializableObjectIds) {
       final object = _objectsById[id];
       object.transientProperties =
-          _transientPropertiesById[id]!.map((e) => _objectsById[e]!).toList();
+          _transientPropertiesById[id]!.map((e) => _objectsById[e]).toList();
     }
   }
 }

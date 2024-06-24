@@ -203,4 +203,26 @@ void main() {
     final r2 = ObjectSerialization.decode(buffer, {}) as RegExp;
     expect(r2, equals(r1));
   });
+
+  test('Null', () async {
+    final buffer = ObjectSerialization.encode(null);
+    final object = ObjectSerialization.decode(buffer, {});
+    expect(object, isNull);
+  });
+
+  test('List with Null', () async {
+    final list1 = [null];
+    final buffer = ObjectSerialization.encode(list1);
+    final list2 = ObjectSerialization.decode(buffer, {});
+    expect(list1, equals(list2));
+  });
+
+  test('Serializable with Null', () async {
+    final n1 = N(null);
+    final buffer = ObjectSerialization.encode(n1);
+    final factories = {'N': N.withFinalProperties};
+    final n2 = ObjectSerialization.decode(buffer, factories) as N;
+    expect(n2.x, isNull);
+    expect(n2.y, isNull);
+  });
 }

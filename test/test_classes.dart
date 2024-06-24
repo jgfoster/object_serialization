@@ -35,7 +35,7 @@ class C extends Serializable {
   D d;
 
   @override
-  // ensure that lists are processede before Serializable objects
+  // ensure that lists are processed before Serializable objects
   List<dynamic> get transientProperties => [
         [d],
       ];
@@ -57,4 +57,25 @@ class D extends Serializable {
 
   @override
   List<dynamic> get finalProperties => [x, y];
+}
+
+// Here we have a nullable properties.
+class N extends Serializable {
+  N(this.x);
+  factory N.withFinalProperties(List<dynamic> finalProperties) {
+    return N(finalProperties[0] as Object?);
+  }
+  final Object? x;
+  Object? y;
+
+  @override
+  List<dynamic> get finalProperties => [x];
+
+  @override
+  List<dynamic> get transientProperties => [y];
+
+  @override
+  set transientProperties(List<dynamic> properties) {
+    y = properties[0] as Object?;
+  }
 }
