@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:decimal/decimal.dart';
 
 import 'package:object_serialization/object_serialization.dart';
 import 'package:test/test.dart';
@@ -173,6 +174,25 @@ void main() {
     final d1 = DateTime.now();
     final buffer = ObjectSerialization.encode(d1);
     final d2 = ObjectSerialization.decode(buffer, {}) as DateTime;
+    expect(d2, equals(d1));
+  });
+
+  test('Decimal', () async {
+    final d0 = Decimal.zero;
+    final d1 = Decimal.parse('123.456');
+    final buffer = ObjectSerialization.encode([d0, d1]);
+    final d2 = [];
+    for (final each in ObjectSerialization.decode(buffer, {})) {
+      d2.add(each as Decimal);
+    }
+    expect(d2[0], equals(d0));
+    expect(d2[1], equals(d1));
+  });
+
+  test('double', () async {
+    final d1 = 1.1;
+    final buffer = ObjectSerialization.encode(d1);
+    final d2 = ObjectSerialization.decode(buffer, {}) as double;
     expect(d2, equals(d1));
   });
 

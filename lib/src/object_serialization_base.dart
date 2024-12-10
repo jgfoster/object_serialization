@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:decimal/decimal.dart';
+
 /// When decoding a JSON string, the [ObjectSerialization] class uses factory
 /// functions to create objects of specific types. The factory functions are
 /// provided as a map where the keys are the type names and the values are
@@ -87,6 +89,7 @@ class _Object {
         object is Set ||
         object is Map ||
         object is DateTime ||
+        object is Decimal ||
         object is Duration ||
         object is BigInt ||
         object is Uri ||
@@ -132,27 +135,28 @@ class _Reader {
             encodedObject[2].map((e) => _objectsById[e]).toList();
         _objectsById[id] = factory(finalProperties);
         _transientPropertiesById[id] = encodedObject[3];
-      } else if (typeName.startsWith('List<')) {
-        _objectsById[id] = [];
-        _transientPropertiesById[id] = encodedObject[3];
-      } else if (typeName.startsWith('_Set<')) {
-        _objectsById[id] = <dynamic>{};
-        _transientPropertiesById[id] = encodedObject[3];
-      } else if (typeName.startsWith('_Map<')) {
-        _objectsById[id] = {};
-        _transientPropertiesById[id] = encodedObject[3];
-      } else if (typeName == 'DateTime') {
-        final usId = encodedObject[2][0] as int;
-        final us = _objectsById[usId] as int;
-        _objectsById[id] = DateTime.fromMicrosecondsSinceEpoch(us);
-      } else if (typeName == 'Duration') {
-        final usId = encodedObject[2][0] as int;
-        final us = _objectsById[usId] as int;
-        _objectsById[id] = Duration(microseconds: us);
       } else if (typeName == '_BigIntImpl') {
         final bigIntId = encodedObject[2][0] as int;
         final string = _objectsById[bigIntId] as String;
         _objectsById[id] = BigInt.parse(string);
+      } else if (typeName == 'DateTime') {
+        final usId = encodedObject[2][0] as int;
+        final us = _objectsById[usId] as int;
+        _objectsById[id] = DateTime.fromMicrosecondsSinceEpoch(us);
+      } else if (typeName == 'Decimal') {
+        final decimalId = encodedObject[2][0] as int;
+        final string = _objectsById[decimalId] as String;
+        _objectsById[id] = Decimal.parse(string);
+      } else if (typeName == 'Duration') {
+        final usId = encodedObject[2][0] as int;
+        final us = _objectsById[usId] as int;
+        _objectsById[id] = Duration(microseconds: us);
+      } else if (typeName.startsWith('List<')) {
+        _objectsById[id] = [];
+        _transientPropertiesById[id] = encodedObject[3];
+      } else if (typeName.startsWith('_Map<')) {
+        _objectsById[id] = {};
+        _transientPropertiesById[id] = encodedObject[3];
       } else if (typeName == '_RegExp') {
         final patternId = encodedObject[2][0] as int;
         final pattern = _objectsById[patternId] as String;
@@ -171,12 +175,18 @@ class _Reader {
           unicode: isUnicode,
           dotAll: isDotAll,
         );
+      } else if (typeName.startsWith('_Set<')) {
+        _objectsById[id] = <dynamic>{};
+        _transientPropertiesById[id] = encodedObject[3];
       } else if (typeName == '_SimpleUri') {
         final uriId = encodedObject[2][0] as int;
         final string = _objectsById[uriId] as String;
         _objectsById[id] = Uri.parse(string);
-      } else {
+      } else if (['bool', 'double', 'int', 'Null', 'String']
+          .contains(typeName)) {
         _objectsById[id] = encodedObject[2];
+      } else {
+        throw 'unknown type: $typeName (is there a missing factory?)';
       }
     }
   }
@@ -252,6 +262,8 @@ class _Writer {
       }
     } else if (next is DateTime) {
       finalProperties.add(next.microsecondsSinceEpoch);
+    } else if (next is Decimal) {
+      finalProperties.add(next.toString());
     } else if (next is Duration) {
       finalProperties.add(next.inMicroseconds);
     } else if (next is BigInt) {
